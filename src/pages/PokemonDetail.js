@@ -10,7 +10,6 @@ import { MyPokemonContext } from '../context/MyPokemonContext';
 const GET_POKEMON_DETAIL = gql`
   query pokemon($name: String!) {
     pokemon(name: $name) {
-      id
       name
       height
       weight
@@ -20,14 +19,15 @@ const GET_POKEMON_DETAIL = gql`
           url
         }
       }
+      sprites {
+        front_default
+      }
       types {
         type {
           name
-          url
         }
       }
       message
-      status
     }
   }
 `;
@@ -45,6 +45,40 @@ const loadingContainer = css`
   }
 `;
 
+const loadingAnimation = css`
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+
+  :after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+  }
+
+  @keyframes lds-hourglass {
+    0% {
+      transform: rotate(0);
+      animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+      transform: rotate(900deg);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+      transform: rotate(1800deg);
+    }
+  }
+`;
+
 const container = css`
   display: flex;
   flex-wrap: wrap;
@@ -55,7 +89,7 @@ const container = css`
   height: 100vh;
 
   img {
-    width: 70%;
+    width: 60%;
   }
 `;
 
@@ -128,7 +162,7 @@ const PokemonDetail = ({ location }) => {
   if (loading) {
     return (
       <div css={css`${loadingContainer}`}>
-        <img src="https://pokeres.bastionbot.org/pokeball.gif" alt="loading" />
+        <div css={[loadingAnimation]} />
       </div>
     );
   }
@@ -136,14 +170,13 @@ const PokemonDetail = ({ location }) => {
   if (error) return `Error! ${error.message}`;
 
   const {
-    id, name, weight, height, types,
+    name, height, weight, sprites, types,
   } = data.pokemon;
-  const pokeImage = `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
 
   return (
     <div css={css`${container}`}>
       <img
-        src={pokeImage}
+        src={sprites.front_default}
         alt={name}
       />
       <h3>
@@ -168,7 +201,10 @@ const PokemonDetail = ({ location }) => {
         </div>
       </div>
 
-      <button type="button" onClick={() => handleClickCatch(name, pokeImage)}>
+      <button
+        type="button"
+        onClick={() => handleClickCatch(name, sprites.front_default)}
+      >
         Catch
       </button>
     </div>

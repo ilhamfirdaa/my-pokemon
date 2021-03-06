@@ -1,6 +1,6 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
-import { gql, NetworkStatus, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
 import { useState } from 'react';
 
@@ -8,15 +8,11 @@ const GET_POKEMONS = gql`
   query pokemons($limit: Int, $offset: Int) {
     pokemons(limit: $limit, offset: $offset) {
       count
-      next
-      previous
-      status
       message
       results {
         id
         image
         name
-        url
       }
     }
   }
@@ -32,6 +28,40 @@ const loadingContainer = css`
 
   img {
     width: 100vw;
+  }
+`;
+
+const loadingAnimation = css`
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+
+  :after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+  }
+
+  @keyframes lds-hourglass {
+    0% {
+      transform: rotate(0);
+      animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+      transform: rotate(900deg);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+      transform: rotate(1800deg);
+    }
   }
 `;
 
@@ -71,7 +101,7 @@ const PokemonList = ({ history }) => {
   };
 
   const {
-    loading, error, data, networkStatus,
+    loading, error, data,
   } = useQuery(GET_POKEMONS, {
     variables: {
       limit,
@@ -82,11 +112,11 @@ const PokemonList = ({ history }) => {
   const handleLoadMore = () => {
     setLimit(limit + 10);
   };
-  console.log(networkStatus);
+
   if (loading) {
     return (
       <div css={css`${loadingContainer}`}>
-        <img src="https://pokeres.bastionbot.org/pokeball.gif" alt="loading" />
+        <div css={[loadingAnimation]} />
       </div>
     );
   }
@@ -99,13 +129,13 @@ const PokemonList = ({ history }) => {
     <div css={css`${container}`}>
       {results.map((item) => (
         <div
-          key={item.name}
+          key={item.id}
           role="link"
           css={css`${listPokemon}`}
           onClick={() => handleClickDetail(item.name)}
         >
           <img
-            src={`https://pokeres.bastionbot.org/images/pokemon/${item.id}.png`}
+            src={item.image}
             alt={item.name}
             css={css`
               width: 6rem;
@@ -116,13 +146,6 @@ const PokemonList = ({ history }) => {
           </span>
         </div>
       ))}
-
-      {networkStatus === NetworkStatus.refetch
-        && (
-          <h1 style={{ color: 'white' }}>
-            Refetching
-          </h1>
-        )}
 
       <button type="button" onClick={() => handleLoadMore()}>
         Load More
