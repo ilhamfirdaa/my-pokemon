@@ -10,9 +10,9 @@ import './App.css';
 function App() {
   return (
     <Switch>
-      <Route component={PokemonList} />
-      <Route component={PokemonDetail} />
-      <Route component={MyPokemonList} />
+      <Route exact path="/" component={PokemonList} />
+      <Route path="/pokemon/:name" component={PokemonDetail} />
+      <Route path="/pokedex" component={MyPokemonList} />
     </Switch>
   );
 }
