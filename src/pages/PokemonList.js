@@ -1,8 +1,8 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
+import { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
-import { useState } from 'react';
 
 const GET_POKEMONS = gql`
   query pokemons($limit: Int, $offset: Int) {
@@ -72,11 +72,7 @@ const listPokemon = css`
   background-color: #ffffff;
   margin: 4px;
   width: 100%;
-  padding: 16px;
-
-  img {
-    margin-bottom: 0.5rem;
-  }
+  padding: 8px;
 
   &:hover {
     animation: bounce 0.5s linear;
@@ -137,9 +133,8 @@ const PokemonList = ({ history }) => {
           <img
             src={item.image}
             alt={item.name}
-            css={css`
-              width: 6rem;
-            `}
+            width={80}
+            height={80}
           />
           <span>
             { item.name }

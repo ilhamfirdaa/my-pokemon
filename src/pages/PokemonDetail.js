@@ -194,7 +194,7 @@ const PokemonDetail = ({ location }) => {
         <div>
           {'Type: '}
           {types.map((el) => (
-            <span>
+            <span key={el.type.name}>
               {`${el.type.name} `}
             </span>
           ))}
@@ -207,6 +207,10 @@ const PokemonDetail = ({ location }) => {
       >
         Catch
       </button>
+
+      <a href="/pokedex">
+        Pokedex
+      </a>
     </div>
   );
 };
