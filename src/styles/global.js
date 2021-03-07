@@ -93,7 +93,6 @@ export const infoContainer = css`
   justify-content: space-evenly;
   align-items: center;
   padding: 16px 0;
-  border-bottom: 1px solid #a1a4a6;
 
   div {
     flex-grow: 1;
@@ -120,6 +119,13 @@ export const infoContainer = css`
   }
 `;
 
+export const emptyPokedex = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const listPokemon = css`
   display: flex;
   flex-direction: column;
@@ -128,12 +134,43 @@ export const listPokemon = css`
   margin: 4px;
   padding: 8px;
   width: calc(100%/2.5);
-  
   border-radius: 9px;
   box-shadow: rgb(49 53 59 / 12%) 0px 1px 6px 0px;
 
   &:hover {
-    animation: bounce 0.5s linear;
+    font-weight: 500;
+    color: #03AC0E;
+    border: 2px solid #03AC0E;
+    padding: 6px;
+    cursor: pointer;
+  }
+
+  @media only screen and (min-width: 768px) {
+    width: calc(100%/5);
+  }
+  @media only screen and (min-width: 992px) {
+    width: calc(100%/10);
+  }
+
+  span {
+    text-transform: capitalize;
+  }
+`;
+
+export const listPokedex = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  margin: 4px;
+  padding: 8px;
+  width: calc(100%/2.5);
+  border-radius: 9px;
+  box-shadow: rgb(49 53 59 / 12%) 0px 1px 6px 0px;
+
+  &:hover {
+    border: 2px solid #03AC0E;
+    padding: 6px;
     cursor: pointer;
   }
 
@@ -170,6 +207,7 @@ export const btnLoadMore = css`
   background: radial-gradient(circle, transparent 1%, rgb(255, 255, 255) 1%) center center / 15000% rgb(255, 255, 255);
   border: 1px solid rgb(159, 166, 176);
   text-indent: initial;
+  text-decoration: none;
   
   &:hover {
     color: #03AC0E;
