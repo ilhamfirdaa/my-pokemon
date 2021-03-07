@@ -34,9 +34,6 @@
         "jsx-a11y/no-noninteractive-element-interactions": "off",
         "jsx-a11y/interactive-supports-focus": "off",
         "jsx-a11y/label-has-associated-control": "off",
-        "jsx-a11y/anchor-is-valid": "off",
-    
-        "no-console": 0,
-        "indent": ["error", 2]
+        "jsx-a11y/anchor-is-valid": "off"
     }
 }
