@@ -1,12 +1,24 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
 import Swal from 'sweetalert2';
 
+// components
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+// context
 import { MyPokemonContext } from '../context/MyPokemonContext';
 
+// style
+import {
+  container, loadingContainer, subDetailContainer,
+  infoContainer, moveContainer, btnLoadMore, btnLoader, loadingAnimation,
+} from '../style/global';
+
+// query
 const GET_POKEMON_DETAIL = gql`
   query pokemon($name: String!) {
     pokemon(name: $name) {
@@ -32,76 +44,12 @@ const GET_POKEMON_DETAIL = gql`
   }
 `;
 
-const loadingContainer = css`
-  display: flex;
-  flex-wrap: wrap;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  background-color: #181B1D;
-
-  img {
-    width: 100vw;
-  }
-`;
-
-const loadingAnimation = css`
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-
-  :after {
-    content: " ";
-    display: block;
-    border-radius: 50%;
-    width: 0;
-    height: 0;
-    margin: 8px;
-    box-sizing: border-box;
-    border: 32px solid #fff;
-    border-color: #fff transparent #fff transparent;
-    animation: lds-hourglass 1.2s infinite;
-  }
-
-  @keyframes lds-hourglass {
-    0% {
-      transform: rotate(0);
-      animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-    }
-    50% {
-      transform: rotate(900deg);
-      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-    }
-    100% {
-      transform: rotate(1800deg);
-    }
-  }
-`;
-
-const container = css`
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  height: 100vh;
-
-  img {
-    width: 60%;
-  }
-`;
-
-const infoContainer = css`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-`;
-
 const PokemonDetail = ({ location }) => {
+  const titleName = location.state[0].toUpperCase() + location.state.slice(1);
+  document.title = `${titleName} | Ilham Firdaus`;
+
   const [Pokedex, setPokedex] = useContext(MyPokemonContext);
+  const [isCatching, setIsCatching] = useState(false);
 
   const gqlVariables = {
     name: location.state,
@@ -112,57 +60,65 @@ const PokemonDetail = ({ location }) => {
   });
 
   const handleClickCatch = (name, pokeImage) => {
-    // catch probability success if > 50%
-    if (Math.random() > 50 / 100) {
-      Swal.fire({
-        title: `${name} was caught!`,
-        text: 'Please give pokemon a nickname',
-        input: 'text',
-        icon: 'success',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Save',
-        inputAttributes: {
-          autocapitalize: 'on',
-        },
-        inputValidator: (value) => {
-          const isRegistered = Pokedex.find((val) => val.nickname === value);
-          if (!value) {
-            return 'You need to give a nickname!';
-          } if (isRegistered) {
-            return `${value} already exits, give another nickname`;
-          }
-          return '';
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setPokedex((prevPokedex) => [...prevPokedex, {
-            name,
-            nickname: result.value,
-            image: pokeImage,
-          }]);
+    setIsCatching(true);
+    setTimeout(() => {
+      setIsCatching(false);
 
-          Swal.fire(
-            'Success',
-            `${result.value} has been added to your Pokedex`,
-            'success',
-          );
-        }
-      });
-    } else {
-      Swal.fire(
-        'Failed',
-        `${name} escape`,
-        'error',
-      );
-    }
+      const pokeName = name[0].toUpperCase() + name.slice(1);
+      // catch probability success if > 50%
+      if (Math.random() > 50 / 100) {
+        Swal.fire({
+          title: `${pokeName} was caught!`,
+          text: 'Please give pokemon a nickname',
+          input: 'text',
+          icon: 'success',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Save',
+          inputAttributes: {
+            autocapitalize: 'on',
+          },
+          inputValidator: (value) => {
+            const isRegistered = Pokedex.find((val) => val.nickname === value);
+            const pokeNickname = value[0]?.toUpperCase() + value?.slice(1);
+            if (!value) {
+              return 'You need to give a nickname!';
+            } if (isRegistered) {
+              return `${pokeNickname} already exits, give another nickname`;
+            }
+            return '';
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const pokeNickname = result.value[0].toUpperCase() + result.value.slice(1);
+            setPokedex((prevPokedex) => [...prevPokedex, {
+              name,
+              nickname: result.value,
+              image: pokeImage,
+            }]);
+
+            Swal.fire(
+              'Success',
+              `${pokeNickname} has been added to your Pokedex`,
+              'success',
+            );
+          }
+        });
+      } else {
+        Swal.fire(
+          'Failed',
+          `${pokeName} runaway`,
+          'error',
+        );
+      }
+    }, 3000);
   };
 
   if (loading) {
     return (
       <div css={css`${loadingContainer}`}>
-        <div css={[loadingAnimation]} />
+        <div css={css`${loadingAnimation}`} />
       </div>
     );
   }
@@ -170,47 +126,89 @@ const PokemonDetail = ({ location }) => {
   if (error) return `Error! ${error.message}`;
 
   const {
-    name, height, weight, sprites, types,
+    name, height, weight, sprites, types, moves,
   } = data.pokemon;
 
   return (
     <div css={css`${container}`}>
-      <img
-        src={sprites.front_default}
-        alt={name}
-      />
-      <h3>
-        { name }
-      </h3>
+      <Header />
 
-      <div css={css`${infoContainer}`}>
-        <span style={{ marginRight: '4px' }}>
-          {`Weight: ${weight / 10} kg`}
-        </span>
-        <span style={{ marginRight: '4px' }}>
-          {`Height: ${height / 10} m`}
+      <div css={css`${subDetailContainer}`}>
+        <img
+          src={sprites.front_default}
+          alt={name}
+        />
+        <h3>
+          { name }
+        </h3>
+
+        <div css={css`${infoContainer}`}>
+          <div>
+            <span>
+              {`${weight / 10}kg`}
+            </span>
+            <br />
+            <span>
+              WEIGHT
+            </span>
+          </div>
+
+          <div>
+            {types.map((el, index) => (
+              <span key={el.type.name}>
+                {`${el.type.name}`}
+                {(index + 1) !== types.length && '/'}
+              </span>
+            ))}
+          </div>
+
+          <div>
+            <span>
+              {`${height / 10}m`}
+            </span>
+            <br />
+            <span>
+              HEIGHT
+            </span>
+          </div>
+        </div>
+
+        <span style={{
+          margin: '16px 0',
+          fontWeight: 'bold',
+          color: '#656769',
+        }}
+        >
+          Moves
         </span>
 
-        <div>
-          {'Type: '}
-          {types.map((el) => (
-            <span key={el.type.name}>
-              {`${el.type.name} `}
+        <div css={css`${moveContainer}`}>
+          {moves.slice(0, 5).map((el, index) => (
+            <span key={el.move.name}>
+              {`${el.move.name[0].toUpperCase() + el.move.name.slice(1)}`}
+              {(index + 1) !== moves.slice(0, 5).length && <span>{' \u2022 '}</span>}
             </span>
           ))}
         </div>
+
+        <button
+          type="button"
+          css={css`${btnLoadMore}`}
+          disabled={isCatching}
+          onClick={() => handleClickCatch(name, sprites.front_default)}
+        >
+          {isCatching ? (
+            <div css={css`${btnLoader}`}>
+              <div />
+              <div />
+              <div />
+              <div />
+            </div>
+          ) : 'Catch'}
+        </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => handleClickCatch(name, sprites.front_default)}
-      >
-        Catch
-      </button>
-
-      <a href="/pokedex">
-        Pokedex
-      </a>
+      <Footer />
     </div>
   );
 };
