@@ -1,33 +1,21 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useEffect, useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
 
 // components
 import Footer from '../components/Footer';
 import Skeleton from '../components/Skeleton';
 
-// style
+// styles
 import {
   container, subContainer, listPokemon, btnLoadMore, loadingContainer, loadingAnimation,
-} from '../style/global';
+} from '../styles/global';
 import Header from '../components/Header';
 
-// query
-const GET_POKEMONS = gql`
-  query pokemons($limit: Int, $offset: Int) {
-    pokemons(limit: $limit, offset: $offset) {
-      count
-      message
-      results {
-        id
-        image
-        name
-      }
-    }
-  }
-`;
+// queries
+import { GET_POKEMONS } from '../services/graphql/query';
 
 const PokemonList = ({ history }) => {
   document.title = 'Pokemon | Ilham Firdaus';
@@ -85,8 +73,8 @@ const PokemonList = ({ history }) => {
             <img
               src={item.image}
               alt={item.name}
-              width={80}
-              height={80}
+              width="80"
+              height="80"
             />
             <span>
               { item.name }
