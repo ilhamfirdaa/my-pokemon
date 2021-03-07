@@ -3,7 +3,7 @@
 import { jsx, css } from '@emotion/react';
 import {
   skeletonCard, skeletonCardImage, skeletonCardTitle, skeletonAnimate,
-} from '../style/global';
+} from '../styles/global';
 
 const Skeleton = () => {
   const element = [];

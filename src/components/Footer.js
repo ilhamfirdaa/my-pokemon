@@ -1,7 +1,7 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { jsx, css } from '@emotion/react';
-import { footer, pokeball } from '../style/global';
+import { footer, pokeball } from '../styles/global';
 
 const Footer = () => (
   <div css={css`${footer}`}>
