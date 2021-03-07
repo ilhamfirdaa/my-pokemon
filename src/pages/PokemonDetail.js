@@ -1,50 +1,29 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useContext, useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
+import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 // components
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-// context
+// contexts
 import { MyPokemonContext } from '../context/MyPokemonContext';
 
-// style
+// styles
 import {
   container, loadingContainer, subDetailContainer,
   infoContainer, moveContainer, btnLoadMore, btnLoader, loadingAnimation,
-} from '../style/global';
+} from '../styles/global';
 
-// query
-const GET_POKEMON_DETAIL = gql`
-  query pokemon($name: String!) {
-    pokemon(name: $name) {
-      name
-      height
-      weight
-      moves {
-        move {
-          name
-          url
-        }
-      }
-      sprites {
-        front_default
-      }
-      types {
-        type {
-          name
-        }
-      }
-      message
-    }
-  }
-`;
+// queries
+import { GET_POKEMON_DETAIL } from '../services/graphql/query';
 
 const PokemonDetail = ({ location }) => {
+  const history = useHistory();
   const titleName = location.state[0].toUpperCase() + location.state.slice(1);
   document.title = `${titleName} | Ilham Firdaus`;
 
@@ -55,16 +34,16 @@ const PokemonDetail = ({ location }) => {
     name: location.state,
   };
 
-  const { loading, error, data } = useQuery(GET_POKEMON_DETAIL, {
+  const { loading, data } = useQuery(GET_POKEMON_DETAIL, {
     variables: gqlVariables,
   });
 
-  const handleClickCatch = (name, pokeImage) => {
+  const handleClickCatch = (catchedPoke) => {
     setIsCatching(true);
     setTimeout(() => {
       setIsCatching(false);
 
-      const pokeName = name[0].toUpperCase() + name.slice(1);
+      const pokeName = catchedPoke.name[0].toUpperCase() + catchedPoke.name.slice(1);
       // catch probability success if > 50%
       if (Math.random() > 50 / 100) {
         Swal.fire({
@@ -93,16 +72,22 @@ const PokemonDetail = ({ location }) => {
           if (result.isConfirmed) {
             const pokeNickname = result.value[0].toUpperCase() + result.value.slice(1);
             setPokedex((prevPokedex) => [...prevPokedex, {
-              name,
+              ...data.pokemon,
               nickname: result.value,
-              image: pokeImage,
+              image: catchedPoke.sprites.front_default,
+              capturedAt: new Date().toDateString(),
             }]);
 
-            Swal.fire(
-              'Success',
-              `${pokeNickname} has been added to your Pokedex`,
-              'success',
-            );
+            Swal.fire({
+              title: `${pokeNickname} has been added to your Pokedex`,
+              showCancelButton: true,
+              confirmButtonText: 'Look your pokemon',
+              cancelButtonText: 'Ok',
+            }).then((res) => {
+              if (res.isConfirmed) {
+                history.push('/my-pokemon');
+              }
+            });
           }
         });
       } else {
@@ -112,7 +97,7 @@ const PokemonDetail = ({ location }) => {
           'error',
         );
       }
-    }, 3000);
+    }, 1000);
   };
 
   if (loading) {
@@ -123,10 +108,8 @@ const PokemonDetail = ({ location }) => {
     );
   }
 
-  if (error) return `Error! ${error.message}`;
-
   const {
-    name, height, weight, sprites, types, moves,
+    name, height, weight, sprites, abilities, moves, types,
   } = data.pokemon;
 
   return (
@@ -173,6 +156,28 @@ const PokemonDetail = ({ location }) => {
           </div>
         </div>
 
+        <hr style={{ width: '100%' }} />
+
+        <span style={{
+          margin: '16px 0',
+          fontWeight: 'bold',
+          color: '#656769',
+        }}
+        >
+          Abilities
+        </span>
+
+        <div css={css`${moveContainer}`}>
+          {abilities.slice(0, 5).map((el, index) => (
+            <span key={el.ability.name}>
+              {`${el.ability.name[0].toUpperCase() + el.ability.name.slice(1)}`}
+              {(index + 1) !== abilities.slice(0, 5).length && <span>{' \u2022 '}</span>}
+            </span>
+          ))}
+        </div>
+
+        <hr style={{ width: '100%' }} />
+
         <span style={{
           margin: '16px 0',
           fontWeight: 'bold',
@@ -193,9 +198,12 @@ const PokemonDetail = ({ location }) => {
 
         <button
           type="button"
-          css={css`${btnLoadMore}`}
+          css={css`
+            ${btnLoadMore}
+            margin-bottom: 56px;
+          `}
           disabled={isCatching}
-          onClick={() => handleClickCatch(name, sprites.front_default)}
+          onClick={() => handleClickCatch(data.pokemon)}
         >
           {isCatching ? (
             <div css={css`${btnLoader}`}>
