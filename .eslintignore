@@ -1,1 +1,4 @@
 *.test.js
+
+/src/service-worker.js
+/src/serviceWorkerRegistration.js
