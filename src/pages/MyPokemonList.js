@@ -5,16 +5,14 @@ import { jsx, css } from '@emotion/react';
 import Swal from 'sweetalert2';
 
 // components
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Loader from '../components/Loader';
 
 // contexts
 import { MyPokemonContext } from '../context/MyPokemonContext';
 
 // styles
 import {
-  container, subContainer, listPokedex, loadingContainer, loadingAnimation,
-  btnLoadMore, emptyPokedex,
+  container, subContainer, listPokedex, btnLoadMore, emptyPokedex,
 } from '../styles/global';
 
 const MyPokemonList = ({ history }) => {
@@ -53,16 +51,11 @@ const MyPokemonList = ({ history }) => {
   }, []);
 
   if (isFirstLoad) {
-    return (
-      <div css={css`${loadingContainer}`}>
-        <div css={[loadingAnimation]} />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div css={css`${container}`}>
-      <Header />
 
       <div css={css`
           ${subContainer}
@@ -129,7 +122,6 @@ const MyPokemonList = ({ history }) => {
           )}
       </div>
 
-      <Footer />
     </div>
   );
 };

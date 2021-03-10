@@ -7,16 +7,14 @@ import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 // components
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Loader from '../components/Loader';
 
 // contexts
 import { MyPokemonContext } from '../context/MyPokemonContext';
 
 // styles
 import {
-  container, loadingContainer, subDetailContainer,
-  infoContainer, moveContainer, btnLoadMore, btnLoader, loadingAnimation,
+  container, subDetailContainer, infoContainer, moveContainer, btnLoadMore, btnLoader,
 } from '../styles/global';
 
 // queries
@@ -82,7 +80,7 @@ const PokemonDetail = ({ location }) => {
               title: `${pokeNickname} has been added to your Pokedex`,
               showCancelButton: true,
               confirmButtonText: 'Look your pokemon',
-              cancelButtonText: 'Ok',
+              cancelButtonText: 'OK',
             }).then((res) => {
               if (res.isConfirmed) {
                 history.push('/my-pokemon');
@@ -101,11 +99,7 @@ const PokemonDetail = ({ location }) => {
   };
 
   if (loading) {
-    return (
-      <div css={css`${loadingContainer}`}>
-        <div css={css`${loadingAnimation}`} />
-      </div>
-    );
+    return <Loader />;
   }
 
   const {
@@ -114,7 +108,6 @@ const PokemonDetail = ({ location }) => {
 
   return (
     <div css={css`${container}`}>
-      <Header />
 
       <div css={css`${subDetailContainer}`}>
         <img
@@ -216,7 +209,6 @@ const PokemonDetail = ({ location }) => {
         </button>
       </div>
 
-      <Footer />
     </div>
   );
 };

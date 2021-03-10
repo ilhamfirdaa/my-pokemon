@@ -5,17 +5,16 @@ import { useQuery } from '@apollo/client';
 import { jsx, css } from '@emotion/react';
 
 // components
-import Footer from '../components/Footer';
 import Skeleton from '../components/Skeleton';
 
 // styles
 import {
-  container, subContainer, listPokemon, btnLoadMore, loadingContainer, loadingAnimation,
+  container, subContainer, listPokemon, btnLoadMore,
 } from '../styles/global';
-import Header from '../components/Header';
 
 // queries
 import { GET_POKEMONS } from '../services/graphql/query';
+import Loader from '../components/Loader';
 
 const PokemonList = ({ history }) => {
   document.title = 'Pokemon | Ilham Firdaus';
@@ -51,16 +50,11 @@ const PokemonList = ({ history }) => {
   }, [data]);
 
   if (isFirstLoad && loading) {
-    return (
-      <div css={css`${loadingContainer}`}>
-        <div css={[loadingAnimation]} />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div css={css`${container}`}>
-      <Header />
 
       <div css={css`${subContainer}`}>
         {listPoke.map((item) => (
@@ -102,7 +96,6 @@ const PokemonList = ({ history }) => {
         </button>
       </div>
 
-      <Footer />
     </div>
   );
 };

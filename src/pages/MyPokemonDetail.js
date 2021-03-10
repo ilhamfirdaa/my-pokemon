@@ -6,16 +6,14 @@ import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 // components
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Loader from '../components/Loader';
 
 // contexts
 import { MyPokemonContext } from '../context/MyPokemonContext';
 
 // styles
 import {
-  container, loadingContainer, subDetailContainer,
-  infoContainer, moveContainer, btnLoadMore, loadingAnimation,
+  container, subDetailContainer, infoContainer, moveContainer, btnLoadMore,
 } from '../styles/global';
 
 const PokemonDetail = ({ location }) => {
@@ -54,16 +52,11 @@ const PokemonDetail = ({ location }) => {
   }, []);
 
   if (isFirstLoad) {
-    return (
-      <div css={css`${loadingContainer}`}>
-        <div css={[loadingAnimation]} />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div css={css`${container}`}>
-      <Header />
 
       <div css={css`${subDetailContainer}`}>
         <img
@@ -160,7 +153,6 @@ const PokemonDetail = ({ location }) => {
         </button>
       </div>
 
-      <Footer />
     </div>
   );
 };
