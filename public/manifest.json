@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Ilham Pokemon",
+  "name": "Ilham Hunt Pokemons",
   "icons": [
     {
       "src": "favicon.ico",
@@ -16,10 +16,20 @@
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "pikachu.png",
+      "type": "image/png",
+      "sizes": "226x223"
+    },
+    {
+      "src": "pokemon.png",
+      "type": "image/png",
+      "sizes": "400x149"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#07a1bc",
   "background_color": "#ffffff"
 }
